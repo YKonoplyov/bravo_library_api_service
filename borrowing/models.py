@@ -14,7 +14,5 @@ class Borrowing(models.Model):
         on_delete=models.CASCADE
     )
     user_id = models.ForeignKey(
-        get_user_model(),
-        related_name="user",
-        on_delete=models.CASCADE
+        get_user_model(), related_name="user", on_delete=models.CASCADE
     )
