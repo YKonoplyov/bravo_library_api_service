@@ -9,8 +9,8 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Borrowing
-        exclude = ("actual_return_date", )
-        extra_kwargs = {"actual_return_date": {"write_only": True}}
+        fields = ("id", "borrow_date", "expected_return_date", "book_id")
+
 
 
 class BorrowingDetailSerializer(BorrowingSerializer):
