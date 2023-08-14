@@ -14,15 +14,36 @@ from borrowing.serializers import (
     BorrowingDetailSerializer, BorrowingReturnSerializer
 )
 
+def params_to_ints(qs):
+    return [int(str_id) for str_id in qs.split(",")]
 
 class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
 
     def get_queryset(self):
-        queryset = Borrowing.objects.all()
+        """Return queryset of borrowings of non-staff user.
+        For admins returns all borrowings. Allows to filter
+        borrowings by user id and it status active(?is_active=1)
+        and not active(?is_active=0)"""
+        queryset = self.queryset
+        users = self.request.query_params.get("users")
+
         if not self.request.user.is_staff:
-            return queryset.filter(user_id=self.request.user.id)
+            queryset = queryset.filter(user_id=self.request.user)
+
+        if users:
+            queryset = queryset.filter(user_id__in=users)
+
+        is_active = self.request.query_params.get("is_active")
+        if is_active:
+            is_active = bool(int(is_active))
+            if is_active:
+                queryset = queryset.filter(actual_return_date=None)
+
+            else:
+                queryset = queryset.filter(~Q(actual_return_date=None))
+
         return queryset
 
     @action(
