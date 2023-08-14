@@ -18,3 +18,9 @@ class Borrowing(models.Model):
         related_name="user",
         on_delete=models.CASCADE
     )
+
+    @property
+    def is_active(self):
+        if not self.actual_return_date:
+            return True
+        return False
