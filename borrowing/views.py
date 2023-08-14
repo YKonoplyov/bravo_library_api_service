@@ -24,3 +24,6 @@ class BorrowingViewSet(ModelViewSet):
         if self.action == "retrieve":
             return BorrowingDetailSerializer
         return BorrowingSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user_id=self.request.user)
