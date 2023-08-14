@@ -20,4 +20,4 @@ class PaymentListView(generics.ListAPIView):
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [IsOwnerOrAdmin]
