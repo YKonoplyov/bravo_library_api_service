@@ -9,10 +9,13 @@ from rest_framework.viewsets import ModelViewSet
 
 from book.models import Book
 from borrowing.models import Borrowing
+from borrowing.permissions import TGBotActivated
 from borrowing.serializers import (
     BorrowingSerializer,
-    BorrowingDetailSerializer, BorrowingReturnSerializer
+    BorrowingDetailSerializer,
+    BorrowingReturnSerializer
 )
+
 
 def params_to_ints(qs):
     return [int(str_id) for str_id in qs.split(",")]
@@ -20,6 +23,7 @@ def params_to_ints(qs):
 class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
+    permission_classes = [IsAuthenticated, TGBotActivated]
 
     def get_queryset(self):
         """Return queryset of borrowings of non-staff user.
