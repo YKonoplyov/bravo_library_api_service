@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 
+from book.models import Book
 from borrowing.models import Borrowing
 from borrowing.serializers import (
     BorrowingSerializer,
@@ -26,4 +26,8 @@ class BorrowingViewSet(ModelViewSet):
         return BorrowingSerializer
 
     def perform_create(self, serializer):
+        """Adds user to borrow instance and decreasing book inventory by 1"""
+        book = Book.objects.get(id=self.request.data["book_id"])
+        book.inventory -= 1
+        book.save()
         serializer.save(user_id=self.request.user)
