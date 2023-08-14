@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser, BaseUserManager
@@ -40,12 +41,46 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
-    telegram_nick = models.CharField(max_length=150, unique=True)
+    telegram_nick = models.CharField(max_length=32, unique=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    @staticmethod
+    def validate_telegram_nick(nick, raise_error):
+        if len(nick) < 5 or len(nick) > 32:
+            raise raise_error("Your nick must be in range (5, 32)")
+        print(nick)
+
+        for char in nick:
+            checks = [char.isdigit(), char.isalpha(), (char == "_"), (char == "@")]
+            if True not in checks:
+                raise raise_error("Nick must contains only letters, digits and _")
+
+        if nick[0] == "@":
+            if nick[1].isdigit() or nick[1] == "_":
+                raise raise_error("First element must be letter")
+        else:
+            if nick[0].isdigit() or nick[0] == "_":
+                raise raise_error("First element must be letter")
+
+    def clean(self):
+        User.validate_telegram_nick(self.telegram_nick, ValidationError)
+
+    def save(
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None,
+    ):
+        self.full_clean()
+        self.validate_telegram_nick(self.telegram_nick, ValidationError)
+        return super(User, self).save(
+            force_insert, force_update, using, update_fields
+        )
 
     def __str__(self):
         return f"{self.telegram_nick} - {self.email}"
