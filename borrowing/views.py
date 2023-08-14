@@ -12,6 +12,12 @@ class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
 
+    def get_queryset(self):
+        queryset = Borrowing.objects.all()
+        if not self.request.user.is_staff:
+            return queryset.filter(user_id=self.request.user.id)
+        return queryset
+
     def get_serializer_class(self):
         if self.action == "list":
             return BorrowingSerializer
