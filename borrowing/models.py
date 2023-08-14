@@ -16,3 +16,7 @@ class Borrowing(models.Model):
     user_id = models.ForeignKey(
         get_user_model(), related_name="user", on_delete=models.CASCADE
     )
+
+    @property
+    def is_active(self):
+        return not bool(self.actual_return_date)
