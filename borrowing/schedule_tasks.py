@@ -1,4 +1,3 @@
-import arrow
 from django.utils import timezone
 from django_q.models import Schedule
 
@@ -9,7 +8,7 @@ def create_borrowing_check():
         schedule_type=Schedule.MINUTES,
         minutes=1,
         repeats=-1,
-        next_run=timezone.datetime.now().replace(hour=12, minute=0)
+        # next_run=timezone.datetime.now().replace(hour=12, minute=0)
     )
 
 
