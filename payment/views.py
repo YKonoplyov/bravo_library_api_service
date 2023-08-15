@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 import stripe
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,9 @@ from library_config.settings import STRIPE_SECRET_KEY
 from borrowing.permissions import IsOwnerOrAdmin
 from payment.models import Payment
 from payment.serializers import PaymentSerializer, PaymentDetailSerializer
+
+
+OVERDUE_CONST = 2
 
 
 class PaymentListView(generics.ListAPIView):
@@ -47,8 +51,8 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment_serializer = self.get_serializer(data=request.data)
         payment_serializer.is_valid(raise_exception=True)
 
-        borrowing = Borrowing.objects.get(id=request.data.get("borrowing"))
-        money_to_pay = request.data.get("money_to_pay")
+        borrowing = get_object_or_404(Borrowing, id=request.data.get("borrowing"))
+        money_to_pay = self.calculate_money_to_pay(borrowing)
 
         payment = Payment.objects.create(
             status=request.data.get("status"),
@@ -80,6 +84,29 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.save()
 
         return Response(data=session, status=status.HTTP_201_CREATED)
+      
+    @staticmethod
+    def calculate_money_to_pay(borrowing):
+        if not borrowing.actual_return_date:
+            return 0
+
+        if borrowing.actual_return_date <= borrowing.expected_return_date:
+            actual_return_date = (
+                borrowing.expected_return_date - borrowing.actual_return_date
+            ).days
+            days_in_usage = borrowing.actual_return_date - actual_return_date
+            book_daily_fee = borrowing.book_id.daily_fee
+            total_price = book_daily_fee * days_in_usage
+            return total_price
+
+        days_late = (
+            borrowing.actual_return_date - borrowing.expected_return_date
+        ).days
+        book_daily_fee = borrowing.book_id.daily_fee
+        total_price = (book_daily_fee * OVERDUE_CONST * days_late) + (
+            borrowing.expected_return_date - borrowing.borrow_date
+        ) * book_daily_fee
+        return total_price
 
 
 class PaymentSuccessView(APIView):
@@ -93,11 +120,3 @@ class PaymentSuccessView(APIView):
         payment.save()
 
         return Response({"message": "payment success"})
-
-
-class PaymentCancelView(APIView):
-
-    def get(self, request):
-        return Response(
-            {"message": "payment cancelled, you can pay later"}
-        )

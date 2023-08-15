@@ -57,7 +57,14 @@ class User(AbstractUser):
 
         for char in nick:
             checks = [
+<<<<<<< HEAD
                 char.isdigit(), char.isalpha(), (char == "_"), (char == "@")
+=======
+                char.isdigit(),
+                char.isalpha(),
+                (char == "_"),
+                (char == "@")
+>>>>>>> 746f39a309cb78e07d3c21aaf5d97f0f0ef7fe5c
             ]
             if True not in checks:
                 raise raise_error(
