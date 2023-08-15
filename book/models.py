@@ -12,7 +12,7 @@ class CoverType(Enum):
     SOFT = "Soft cover"
 
 
-def movie_image_file_path(instance, filename):
+def book_image_file_path(instance, filename):
     _, extension = os.path.splitext(filename)
 
     filename = f"{slugify(instance.title)}-{uuid.uuid4()}.{extension}"
@@ -32,7 +32,7 @@ class Book(models.Model):
     )
     inventory = models.PositiveIntegerField(default=0)
     daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
-    image = models.ImageField(null=True, upload_to=movie_image_file_path)
+    image = models.ImageField(null=True, upload_to=book_image_file_path)
 
     class Meta:
         ordering = ["title"]
