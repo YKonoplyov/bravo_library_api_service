@@ -144,3 +144,9 @@ REST_FRAMEWORK = {
     )
 }
 
+Q_CLUSTER = {
+    "timeout": 5,
+    "retry": 20,
+    "workers": 4,
+    "orm": "default",
+}
