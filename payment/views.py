@@ -117,8 +117,9 @@ class PaymentSuccessView(APIView):
         payment.status = "PAID"
         payment.save()
 
-        return Response({"message": "payment success"})
-
+        return Response(
+            {"message": "payment success"}
+        )
 
 class PaymentCancelView(APIView):
     def get(self, request):
