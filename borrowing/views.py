@@ -22,10 +22,14 @@ def params_to_ints(qs):
     return [int(str_id) for str_id in qs.split(",")]
 
 
+def params_to_ints(qs):
+    return [int(str_id) for str_id in qs.split(",")]
+
 class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
-    # permission_classes = [IsAuthenticated, TGBotActivated]
+    permission_classes = [IsAuthenticated, TGBotActivated]
+
 
     def get_queryset(self):
         """Return queryset of borrowings of non-staff user.
