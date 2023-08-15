@@ -1,10 +1,12 @@
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.viewsets import ModelViewSet
 
 from book.models import Book
@@ -26,7 +28,6 @@ class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
     permission_classes = [IsAuthenticated, TGBotActivated]
-
 
     def get_queryset(self):
         """Return queryset of borrowings of non-staff user.
@@ -81,6 +82,13 @@ class BorrowingViewSet(ModelViewSet):
         if self.action == "return_book":
             return BorrowingReturnSerializer
         return BorrowingSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return redirect(reverse("payment:session-create"), status=status.HTTP_307_TEMPORARY_REDIRECT, headers=headers)
 
     def perform_create(self, serializer):
         """Adds user to borrow instance and decreasing book inventory by 1"""
