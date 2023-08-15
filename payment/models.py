@@ -1,26 +1,35 @@
+from enum import Enum
+
 from django.db import models
 
 from borrowing.models import Borrowing
 
 
-class Payment(models.Model):
-    class StatusChoices(models.TextChoices):
-        PENDING = "Pending"
-        PAID = "Paid"
+class StatusChoices(Enum):
+    PENDING = "Pending"
+    PAID = "Paid"
 
-    class TypeChoices(models.TextChoices):
-        PAYMENT = "Payment"
-        FINE = "Fine"
+
+class TypeChoices(Enum):
+    PAYMENT = "Payment"
+    FINE = "Fine"
+
+
+class Payment(models.Model):
 
     status = models.CharField(
         max_length=8,
-        choices=StatusChoices.choices,
-        default=StatusChoices.PENDING
+        choices=[
+            (_status.name, _status.value)
+            for _status in StatusChoices
+        ],
     )
     type = models.CharField(
         max_length=8,
-        choices=TypeChoices.choices,
-        default=TypeChoices.PAYMENT
+        choices=[
+            (_type.name, _type.value)
+            for _type in TypeChoices
+        ]
     )
     borrowing = models.ForeignKey(
         Borrowing,
