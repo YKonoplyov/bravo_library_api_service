@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from services import bot_manager
+from services.notifications.bot_manager import TelegramBot
 
 
 class TGBotActivated(BasePermission):
@@ -10,9 +10,8 @@ class TGBotActivated(BasePermission):
         if user and user.chat_id is not None:
             return True
 
-        chat_id = bot_manager.bot_get_chat_id_if_started(
-            telegram_nick=user.telegram_nick[1:]
-        )
+        bot = TelegramBot()
+        chat_id = bot.get_chat_id_if_started(telegram_nick=user.telegram_nick[1:])
 
         if chat_id != -1:
             user.chat_id = chat_id
