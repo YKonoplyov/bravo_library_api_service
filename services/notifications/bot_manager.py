@@ -2,6 +2,7 @@ import requests
 
 TOKEN = "6200280006:AAEohwzJIDKMwGElXWMFlFmQGRtAMxmk808"
 TG_API_URL = "https://api.telegram.org/bot"
+ADMIN_CHAT_ID = "-946839932"
 
 
 class TelegramBot:
@@ -9,14 +10,39 @@ class TelegramBot:
 
     def send_message(self, message_text: str, chat_id: str) -> None:
         """Send message to given chat id with given message text"""
-        url = f"{self.base_url}/sendMessage?chat_id={chat_id}&text={message_text}"
+        url = (
+            f"{self.base_url}/sendMessage?"
+            f"chat_id={chat_id}&text={message_text}"
+        )
         requests.get(url=url)
 
-    def send_notifications(self, receivers: list):
-        pass
+    def send_notifications(self, overdue_borrowings_queryset: list):
+        admin_message_text = f"List of users overdue for today\n\n"
+
+        for overdue_borrowing in overdue_borrowings_queryset:
+            admin_message_text += (
+                f"User email: {overdue_borrowing.user_id.email}\n"
+                f"Telegram nick: {overdue_borrowing.user_id.telegram_nick}\n"
+                f"Book borrowed: {overdue_borrowing.book_id}\n"
+                f"Expected return date was: "
+                f"{overdue_borrowing.expected_return_date}\n\n"
+            )
+
+            user_message = (
+                f"You have opened borrowing on book - "
+                f"{overdue_borrowing.book_id}"
+            )
+
+            self.send_message(user_message, overdue_borrowing.user_id.chat_id)
+
+        if len(overdue_borrowings_queryset) == 0:
+            admin_message_text = "There are no overdue users today"
+
+        self.send_message(admin_message_text, ADMIN_CHAT_ID)
 
     def get_chat_id_if_started(self, telegram_nick: str) -> str | int:
-        """telegram API checking if there is user /start command with given username"""
+        """telegram API checking if there is user
+         /start command with given username"""
         url = f"{self.base_url}/getUpdates"
         response = requests.get(url=url).json()
         messages = response["result"]
@@ -30,7 +56,7 @@ class TelegramBot:
                 ):
                     chat_id = message["chat"]["id"]
                     self.send_message(
-                        message_text="Successfully registered, you can borrow books now",
+                        message_text="You can borrow books now",
                         chat_id=chat_id,
                     )
                     return chat_id
