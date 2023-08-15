@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from borrowing.serializers import BorrowingDetailSerializer
+from borrowing.serializers import BorrowingSerializer
 from payment.models import Payment
 
 
@@ -12,12 +12,13 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class PaymentDetailSerializer(PaymentSerializer):
-    borrowing = BorrowingDetailSerializer(
+    borrowing = BorrowingSerializer(
         read_only=True,
         many=False
     )
 
     class Meta:
+        model = Payment
         fields = [
             "status",
             "type",
