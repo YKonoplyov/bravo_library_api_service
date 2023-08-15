@@ -56,7 +56,7 @@ class BorrowingViewSet(ModelViewSet):
         return queryset
 
     @action(
-        methods=["PATCH"],
+        methods=["GET"],
         detail=True,
         url_path="return-book",
         permission_classes=[IsAuthenticated],)
