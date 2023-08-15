@@ -36,3 +36,33 @@ class TelegramBot:
                     return chat_id
 
         return -1
+
+    def send_borrowing_created_notification(self, instance):
+        last_borrowing = instance.last()
+        active_borrowings = [
+            borrow for borrow in instance.all() if borrow.is_active == 1
+        ]
+
+        chat_id = last_borrowing.user_id.chat_id
+        message = (
+            f"You created new borrowing!\n"
+            f"-------------------------\n"
+            f"Title: {last_borrowing.book_id.title}\n"
+            f"Author: {last_borrowing.book_id.author}\n"
+            f"Cover: {last_borrowing.book_id.cover}\n"
+            f"Return to {last_borrowing.expected_return_date}\n"
+            f"-------------------------\n"
+            f"Your active borrowings\n"
+        )
+
+        for active_borrowing in active_borrowings:
+            message += (
+                f"- Book title: {active_borrowing.book_id.title},"
+                f" expected return date "
+                f"{active_borrowing.expected_return_date}\n"
+            )
+
+        self.send_message(
+            message_text=message,
+            chat_id=chat_id,
+        )
