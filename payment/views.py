@@ -64,8 +64,8 @@ class PaymentSessionCreateView(generics.CreateAPIView):
                 "quantity": 1,
             }],
             mode="payment",
-            success_url="http://127.0.0.1:8000/api/payments/success/",
-            cancel_url="http://127.0.0.1:8000/api/payments/cancel/",
+            success_url="http://127.0.0.1:8000/api/payment/payments/success/",
+            cancel_url="http://127.0.0.1:8000/api/payment/payments/cancel/",
         )
 
         payment.session_id = session.get("id")
@@ -80,7 +80,7 @@ class PaymentSuccessView(APIView):
     def get(self, request):
         user_id = request.user.id
         payment = Payment.objects.filter(borrowing__user_id=user_id).last()
-        payment.status = Payment.StatusChoices.PAID
+        payment.status = "PAID"
         payment.save()
 
         return Response({"message": "payment success"})
@@ -89,4 +89,6 @@ class PaymentSuccessView(APIView):
 class PaymentCancelView(APIView):
 
     def get(self, request):
-        return Response({"message": "payment cancelled"})
+        return Response(
+            {"message": "payment cancelled, you can pay later"}
+        )
