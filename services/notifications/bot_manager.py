@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import requests
 
 TOKEN = "6200280006:AAEohwzJIDKMwGElXWMFlFmQGRtAMxmk808"
