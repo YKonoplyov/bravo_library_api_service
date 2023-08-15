@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 import stripe
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -9,7 +9,7 @@ from borrowing.models import Borrowing
 from library_config.settings import STRIPE_SECRET_KEY
 from borrowing.permissions import IsOwnerOrAdmin
 from payment.models import Payment
-from payment.serializers import PaymentSerializer
+from payment.serializers import PaymentSerializer, PaymentDetailSerializer
 
 
 OVERDUE_CONST = 2
@@ -29,8 +29,8 @@ class PaymentListView(generics.ListAPIView):
 
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
     permission_classes = [IsOwnerOrAdmin]
+    serializer_class = PaymentDetailSerializer
 
 
 stripe.api_key = STRIPE_SECRET_KEY
@@ -41,15 +41,27 @@ class PaymentSessionCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        payment_serializer = self.get_serializer(data=request.data)
-        payment_serializer.is_valid(raise_exception=True)
+        user = request.user
+        unpaid = Payment.objects.filter(
+            borrowing__user_id=user.id
+        ).filter(status="PENDING")
+        if unpaid:
+            return Response({"error": "you must end previous payment"})
 
-        borrowing = get_object_or_404(Borrowing, id=request.data.get("borrowing"))
-        money_to_pay = self.calculate_money_to_pay(borrowing)
+        borrowing = Borrowing.objects.filter(user_id=user).last()
+
+        if borrowing.actual_return_date is None:
+            money_to_pay = self.calculate_money_to_pay(borrowing)
+            payment_status = "PENDING"
+            payment_type = "PAYMENT"
+        else:
+            money_to_pay = self.calculate_money_to_pay_fee(borrowing)
+            payment_status = "PENDING"
+            payment_type = "FINE"
 
         payment = Payment.objects.create(
-            status=request.data.get("status"),
-            type=request.data.get("type"),
+            status=payment_status,
+            type=payment_type,
             money_to_pay=money_to_pay,
             borrowing=borrowing
         )
@@ -76,29 +88,22 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.session_url = session.get("url")
         payment.save()
 
-        return Response(data=session, status=status.HTTP_201_CREATED)
+        return redirect(session.get("url"), status=status.HTTP_301_MOVED_PERMANENTLY)
       
     @staticmethod
     def calculate_money_to_pay(borrowing):
-        if not borrowing.actual_return_date:
-            return 0
+        days_in_usage = (borrowing.expected_return_date - borrowing.borrow_date).days
+        book_daily_fee = borrowing.book_id.daily_fee
+        total_price = book_daily_fee * days_in_usage
+        return total_price
 
-        if borrowing.actual_return_date <= borrowing.expected_return_date:
-            actual_return_date = (
-                borrowing.expected_return_date - borrowing.actual_return_date
-            ).days
-            days_in_usage = borrowing.actual_return_date - actual_return_date
-            book_daily_fee = borrowing.book_id.daily_fee
-            total_price = book_daily_fee * days_in_usage
-            return total_price
-
+    @staticmethod
+    def calculate_money_to_pay_fee(borrowing):
         days_late = (
             borrowing.actual_return_date - borrowing.expected_return_date
         ).days
         book_daily_fee = borrowing.book_id.daily_fee
-        total_price = (book_daily_fee * OVERDUE_CONST * days_late) + (
-            borrowing.expected_return_date - borrowing.borrow_date
-        ) * book_daily_fee
+        total_price = (book_daily_fee * OVERDUE_CONST * days_late)
         return total_price
 
 
@@ -106,13 +111,18 @@ class PaymentSuccessView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        payment = Payment.objects.filter(borrowing__user_id=user_id).last()
+        payment = Payment.objects.filter(
+            borrowing__user_id=user_id
+        ).filter(status="PENDING").last()
         payment.status = "PAID"
         payment.save()
 
-        return Response({"message": "payment success"})
+        return Response(
+            {"message": "payment success"}
+        )
 
 class PaymentCancelView(APIView):
-
     def get(self, request):
-        return Response({"message": "payment cancelled"})
+        return Response(
+            {"message": "payment cancelled, you can pay later"}
+        )
