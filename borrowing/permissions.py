@@ -5,7 +5,7 @@ from services.notifications.bot_manager import TelegramBot
 
 class IsOwnerOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.user == request.user or request.user.is_staff
+        return obj.borrowing.user_id == request.user or request.user.is_staff
 
       
 class TGBotActivated(BasePermission):
