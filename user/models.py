@@ -53,7 +53,6 @@ class User(AbstractUser):
     def validate_telegram_nick(nick, raise_error):
         if len(nick) < 5 or len(nick) > 32:
             raise raise_error("Your nick must be in range (5, 32)")
-        print(nick)
 
         for char in nick:
             checks = [
