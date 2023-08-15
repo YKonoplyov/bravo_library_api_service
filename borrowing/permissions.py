@@ -8,7 +8,7 @@ class IsOwnerOrAdmin(BasePermission):
         return obj.user == request.user or request.user.is_staff
 
       
- class TGBotActivated(BasePermission):
+class TGBotActivated(BasePermission):
     def has_permission(self, request, view):
         user = request.user
 
