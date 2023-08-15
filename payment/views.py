@@ -8,7 +8,7 @@ from borrowing.models import Borrowing
 from library_config.settings import STRIPE_SECRET_KEY
 from borrowing.permissions import IsOwnerOrAdmin
 from payment.models import Payment
-from payment.serializers import PaymentSerializer
+from payment.serializers import PaymentSerializer, PaymentDetailSerializer
 
 
 class PaymentListView(generics.ListAPIView):
@@ -25,8 +25,8 @@ class PaymentListView(generics.ListAPIView):
 
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
     permission_classes = [IsOwnerOrAdmin]
+    serializer_class = PaymentDetailSerializer
 
 
 stripe.api_key = STRIPE_SECRET_KEY
@@ -38,7 +38,9 @@ class PaymentSessionCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-        unpaid = Payment.objects.filter(borrowing__user_id=user.id).filter(status="PENDING")
+        unpaid = Payment.objects.filter(
+            borrowing__user_id=user.id
+        ).filter(status="PENDING")
         if unpaid:
             return Response({"error": "you must end previous payment"})
 
