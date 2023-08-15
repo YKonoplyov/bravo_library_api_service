@@ -5,6 +5,6 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender=get_user_model())
 def add_at_symbol_to_telegram_nick(sender, instance, created, **kwargs):
-    if created and not instance.telegram_nick.startswith('@'):
-        instance.telegram_nick = '@' + instance.telegram_nick
+    if created and not instance.telegram_nick.startswith("@"):
+        instance.telegram_nick = "@" + instance.telegram_nick
         instance.save()
