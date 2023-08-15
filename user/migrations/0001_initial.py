@@ -80,12 +80,18 @@ class Migration(migrations.Migration):
                         max_length=254, unique=True, verbose_name="email address"
                     ),
                 ),
-                ("telegram_nick", models.CharField(max_length=150, unique=True)),
+                (
+                    "telegram_nick",
+                    models.CharField(max_length=150, unique=True)
+                ),
                 (
                     "groups",
                     models.ManyToManyField(
                         blank=True,
-                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        help_text=
+                        "The groups this user belongs to. "
+                        "A user will get all permissions "
+                        "granted to each of their groups.",
                         related_name="user_set",
                         related_query_name="user",
                         to="auth.group",

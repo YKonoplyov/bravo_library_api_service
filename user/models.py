@@ -56,9 +56,20 @@ class User(AbstractUser):
         print(nick)
 
         for char in nick:
-            checks = [char.isdigit(), char.isalpha(), (char == "_"), (char == "@")]
+            checks = [
+<<<<<<< HEAD
+                char.isdigit(), char.isalpha(), (char == "_"), (char == "@")
+=======
+                char.isdigit(),
+                char.isalpha(),
+                (char == "_"),
+                (char == "@")
+>>>>>>> 746f39a309cb78e07d3c21aaf5d97f0f0ef7fe5c
+            ]
             if True not in checks:
-                raise raise_error("Nick must contains only letters, digits and _")
+                raise raise_error(
+                    "Nick must contains only letters, digits and _"
+                )
 
         if nick[0] == "@":
             if nick[1].isdigit() or nick[1] == "_":

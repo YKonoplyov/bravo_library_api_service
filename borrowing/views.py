@@ -15,6 +15,7 @@ from borrowing.serializers import (
     BorrowingDetailSerializer,
     BorrowingReturnSerializer
 )
+from borrowing.signals import borrowing_created
 
 
 def params_to_ints(qs):
@@ -25,6 +26,7 @@ class BorrowingViewSet(ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
     permission_classes = [IsAuthenticated, TGBotActivated]
+
 
     def get_queryset(self):
         """Return queryset of borrowings of non-staff user.
@@ -86,3 +88,5 @@ class BorrowingViewSet(ModelViewSet):
         book.inventory -= 1
         book.save()
         serializer.save(user_id=self.request.user)
+
+        borrowing_created.send(sender=Borrowing, instance=self.queryset)
