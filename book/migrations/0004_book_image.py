@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             model_name="book",
             name="image",
             field=models.ImageField(
-                null=True, upload_to=book.models.movie_image_file_path
+                null=True, upload_to=book.models.book_image_file_path
             ),
         ),
     ]
