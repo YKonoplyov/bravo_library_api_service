@@ -1,15 +1,16 @@
-from django.views import View
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
+from rest_framework.views import APIView
+
 from borrowing.models import Borrowing
 
 OVERDUE_CONST = 2
 
 
-class PaymentView(View):
+class PaymentView(APIView):
     def get(self, request, borrowing_id):
         borrowing = get_object_or_404(Borrowing, id=borrowing_id)
-        return JsonResponse(
+        return HttpResponse(
             {"money_to_pay": self.calculate_money_to_pay(borrowing)}
         )
 

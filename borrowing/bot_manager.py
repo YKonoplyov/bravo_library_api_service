@@ -20,7 +20,6 @@ def bot_get_chat_id_if_started(telegram_nick: str) -> str | int:
     """
     url = TG_API_URL + TOKEN + "/getUpdates"
     response = requests.get(url=url).json()
-    print(response)
     messages = response["result"]
 
     for message_object in messages[::-1]:
