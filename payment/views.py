@@ -37,6 +37,11 @@ class PaymentSessionCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
+        user = request.user
+        unpaid = Payment.objects.filter(borrowing__user_id=user.id).filter(status="PENDING")
+        if unpaid:
+            return Response({"error": "you must end previous payment"})
+
         payment_serializer = self.get_serializer(data=request.data)
         payment_serializer.is_valid(raise_exception=True)
 
@@ -79,7 +84,9 @@ class PaymentSuccessView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        payment = Payment.objects.filter(borrowing__user_id=user_id).last()
+        payment = Payment.objects.filter(
+            borrowing__user_id=user_id
+        ).filter(status="PENDING").last()
         payment.status = "PAID"
         payment.save()
 
