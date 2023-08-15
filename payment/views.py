@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+from django.shortcuts import get_object_or_404
 import stripe
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +10,9 @@ from library_config.settings import STRIPE_SECRET_KEY
 from borrowing.permissions import IsOwnerOrAdmin
 from payment.models import Payment
 from payment.serializers import PaymentSerializer
+
+
+OVERDUE_CONST = 2
 
 
 class PaymentListView(generics.ListAPIView):
@@ -41,8 +44,8 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment_serializer = self.get_serializer(data=request.data)
         payment_serializer.is_valid(raise_exception=True)
 
-        borrowing = Borrowing.objects.get(id=request.data.get("borrowing"))
-        money_to_pay = request.data.get("money_to_pay")
+        borrowing = get_object_or_404(Borrowing, id=request.data.get("borrowing"))
+        money_to_pay = self.calculate_money_to_pay(borrowing)
 
         payment = Payment.objects.create(
             status=request.data.get("status"),
@@ -65,8 +68,8 @@ class PaymentSessionCreateView(generics.CreateAPIView):
                 "quantity": 1,
             }],
             mode="payment",
-            success_url="http://127.0.0.1:8000/api/payments/success/",
-            cancel_url="http://127.0.0.1:8000/api/payments/cancel/",
+            success_url="http://127.0.0.1:8000/api/payment/payments/success/",
+            cancel_url="http://127.0.0.1:8000/api/payment/payments/cancel/",
         )
 
         payment.session_id = session.get("id")
@@ -74,40 +77,7 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.save()
 
         return Response(data=session, status=status.HTTP_201_CREATED)
-
-
-class PaymentSuccessView(APIView):
-
-    def get(self, request):
-        user_id = request.user.id
-        payment = Payment.objects.filter(borrowing__user_id=user_id).last()
-        payment.status = Payment.StatusChoices.PAID
-        payment.save()
-
-        return Response({"message": "payment success"})
-
-
-class PaymentCancelView(APIView):
-
-    def get(self, request):
-        return Response({"message": "payment cancelled"})
-=======
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-
-from borrowing.models import Borrowing
-
-OVERDUE_CONST = 2
-
-
-class PaymentView(APIView):
-    def get(self, request, borrowing_id):
-        borrowing = get_object_or_404(Borrowing, id=borrowing_id)
-        return HttpResponse(
-            {"money_to_pay": self.calculate_money_to_pay(borrowing)}
-        )
-
+      
     @staticmethod
     def calculate_money_to_pay(borrowing):
         if not borrowing.actual_return_date:
@@ -130,4 +100,14 @@ class PaymentView(APIView):
             borrowing.expected_return_date - borrowing.borrow_date
         ) * book_daily_fee
         return total_price
->>>>>>> 746f39a309cb78e07d3c21aaf5d97f0f0ef7fe5c
+
+
+class PaymentSuccessView(APIView):
+
+    def get(self, request):
+        user_id = request.user.id
+        payment = Payment.objects.filter(borrowing__user_id=user_id).last()
+        payment.status = "PAID"
+        payment.save()
+
+        return Response({"message": "payment success"})

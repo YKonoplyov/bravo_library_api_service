@@ -7,13 +7,13 @@ from borrowing.models import Borrowing
 
 
 class StatusChoices(Enum):
-    PENDING = "Pending"
-    PAID = "Paid"
+    PENDING = "PENDING"
+    PAID = "PAID"
 
 
 class TypeChoices(Enum):
-    PAYMENT = "Payment"
-    FINE = "Fine"
+    PAYMENT = "PAYMENT"
+    FINE = "FINE"
 
 
 class Payment(models.Model):
