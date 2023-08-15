@@ -3,7 +3,12 @@ from rest_framework.permissions import BasePermission
 from services.notifications.bot_manager import TelegramBot
 
 
-class TGBotActivated(BasePermission):
+class IsOwnerOrAdmin(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user or request.user.is_staff
+
+      
+ class TGBotActivated(BasePermission):
     def has_permission(self, request, view):
         user = request.user
 
