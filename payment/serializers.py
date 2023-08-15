@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from borrowing.serializers import BorrowingDetailSerializer
-from payments.models import Payment
+from payment.models import Payment
 
 
 class PaymentSerializer(serializers.ModelSerializer):

@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from borrowing.models import Borrowing
 from library_config.settings import STRIPE_SECRET_KEY
 from borrowing.permissions import IsOwnerOrAdmin
-from payments.models import Payment
-from payments.serializers import PaymentSerializer
+from payment.models import Payment
+from payment.serializers import PaymentSerializer
 
 
 class PaymentListView(generics.ListAPIView):
