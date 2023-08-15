@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from borrowing import bot_manager
+from services import bot_manager
 
 
 class TGBotActivated(BasePermission):
