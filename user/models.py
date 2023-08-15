@@ -45,7 +45,7 @@ class User(AbstractUser):
     chat_id = models.CharField(max_length=30, blank=True, null=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["telegram_nick"]
 
     objects = UserManager()
 
