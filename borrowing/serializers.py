@@ -17,7 +17,6 @@ class BorrowingSerializer(serializers.ModelSerializer):
         Borrowing.validate_book_inventory(
             attrs.get("book_id")
         )
-        print(attrs)
         return data
 
     class Meta:
