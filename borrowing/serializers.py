@@ -8,11 +8,15 @@ from user.serializers import UserSerializer
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
+
     def validate(self, attrs):
         data = super(BorrowingSerializer, self).validate(attrs=attrs)
-        book = attrs.get("book_id")
-        if book.inventory == 0:
-            raise ValidationError(f"There is no copies of {book.title}")
+        Borrowing.validate_expected_return_date(
+            attrs["expected_return_date"]
+        )
+        Borrowing.validate_book_inventory(
+            attrs.get("book_id")
+        )
         return data
 
     class Meta:

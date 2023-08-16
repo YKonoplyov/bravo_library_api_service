@@ -7,6 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         create_borrowing_check()
-        self.stdout.write(
-            self.style.SUCCESS("Borrowing check schedule created")
+
+        self.stdout.write(self.style.SUCCESS(
+            "Borrowing check schedule created"
         )
