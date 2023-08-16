@@ -79,5 +79,6 @@ class TestBorrowingModel(TestCase):
                     user_id=self.user
                 )
         test_string = ("Sample book was borrowed from "
-                       "2023-08-16 to expected 2023-08-18")
+                       f"{self.time_now} to expected "
+                       f"{self.time_now + timedelta(days=2)}")
         self.assertEqual(borrowing.__str__(), test_string)
