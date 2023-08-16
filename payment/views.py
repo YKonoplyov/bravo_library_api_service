@@ -88,11 +88,13 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.session_url = session.get("url")
         payment.save()
 
-        return redirect(session.get("url"), status=status.HTTP_302_FOUND)
+        return redirect(
+            session.get("url"),
+            status=status.HTTP_301_MOVED_PERMANENTLY
+        )
 
     @staticmethod
     def calculate_money_to_pay(borrowing):
-
         days_in_usage = (
         borrowing.expected_return_date - borrowing.borrow_date
         ).days
