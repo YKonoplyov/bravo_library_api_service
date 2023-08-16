@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import os
+
 import requests
 
-TOKEN = "6200280006:AAEohwzJIDKMwGElXWMFlFmQGRtAMxmk808"
+TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_API_URL = "https://api.telegram.org/bot"
-ADMIN_CHAT_ID = "-946839932"
+ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
 
 
 class TelegramBot:
@@ -73,13 +75,11 @@ class TelegramBot:
 
         chat_id = last_borrowing.user_id.chat_id
         message = (
-            f"You created new borrowing!\n"
-            f"-------------------------\n"
+            f"You created new borrowing!\n\n"
             f"Title: {last_borrowing.book_id.title}\n"
             f"Author: {last_borrowing.book_id.author}\n"
             f"Cover: {last_borrowing.book_id.cover}\n"
-            f"Return to {last_borrowing.expected_return_date}\n"
-            f"-------------------------\n"
+            f"Return to {last_borrowing.expected_return_date}\n\n"
             f"Your active borrowings\n"
         )
 
@@ -87,7 +87,7 @@ class TelegramBot:
             message += (
                 f"- Book title: {active_borrowing.book_id.title},"
                 f" expected return date "
-                f"{active_borrowing.expected_return_date}\n"
+                f"{active_borrowing.expected_return_date}\n\n"
             )
 
         self.send_message(

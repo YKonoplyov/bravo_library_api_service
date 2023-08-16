@@ -1,0 +1,28 @@
+version: "1"
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c
+      "python manage.py wait_for_db --settings=library_config.settings-prod &&
+       python manage.py migrate --settings=library_config.settings-prod &&
+       python manage.py schedule_borrowings_check --settings=library_config.settings-prod &&
+       python manage.py qcluster --settings=library_config.settings-prod &
+       python manage.py runserver 0.0.0.0:8000 --settings=library_config.settings-prod
+      "
+
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
