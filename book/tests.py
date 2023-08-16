@@ -106,7 +106,7 @@ class AuthenticatedBookTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_create_movie_forbidden(self):
+    def test_create_book_forbidden(self):
         payload = {
             "title": "Sample book",
             "author": "Sample author",
@@ -132,7 +132,7 @@ class AdminMovieApiTest(TestCase):
 
         self.client.force_authenticate(self.user)
 
-    def test_create_movie(self):
+    def test_create_book(self):
         payload = {
             "title": "Sample book",
             "author": "Sample author",
