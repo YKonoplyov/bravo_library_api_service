@@ -27,6 +27,10 @@ urlpatterns = [
     path("api/book/", include("book.urls", namespace="book")),
     path("api/borrowing/", include("borrowing.urls", namespace="borrowing")),
     path("api/payment/", include("payment.urls", namespace="payment")),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
