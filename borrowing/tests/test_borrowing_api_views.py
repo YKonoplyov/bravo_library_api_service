@@ -88,7 +88,7 @@ class AuthorizedBorrowingTest(TestCase):
             email="testmain@example.com",
             telegram_nick="main_user1"
         )
-        self.user.chat_id = "fghjk"
+        self.user.chat_id = "1234"
 
         self.client.force_authenticate(self.user)
 
