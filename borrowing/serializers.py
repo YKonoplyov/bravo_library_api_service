@@ -12,7 +12,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         data = super(BorrowingSerializer, self).validate(attrs=attrs)
         Borrowing.validate_expected_return_date(
-            attrs["expected_return_date"]
+            attrs.get["expected_return_date"]
         )
         Borrowing.validate_book_inventory(
             attrs.get("book_id")
