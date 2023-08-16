@@ -39,8 +39,9 @@ def sample_user(**params):
 
 
 def sample_borrowing(user, **params):
+    now = timezone.now().date()
     defaults = {
-        "expected_return_date": "2023-08-17",
+        "expected_return_date": now + timezone.timedelta(days=5),
         "book_id": sample_book(),
         "user_id": user,
     }
@@ -92,7 +93,7 @@ class AuthorizedBorrowingTest(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_users_borrowings_list(self):
-        sample_borrowing(user_id=self.user)
+        sample_borrowing(user=self.user)
 
         response = self.client.get(BORROWING_URL)
         borrowings = Borrowing.objects.all()
@@ -116,7 +117,7 @@ class AuthorizedBorrowingTest(TestCase):
     def test_filter_borrowings_by_is_active(self):
         borrowing1 = sample_borrowing(user=self.user)
         borrowing2 = sample_borrowing(user=self.user)
-        borrowing2.actual_return_date = "2023-08-17"
+        borrowing2.actual_return_date = borrowing2.expected_return_date
         borrowing2.save()
 
         response = self.client.get(
@@ -141,8 +142,9 @@ class AuthorizedBorrowingTest(TestCase):
 
     def test_borrowing_create(self):
         book = sample_book()
+        now = timezone.now().date()
         data = {
-            "expected_return_date": "2023-08-17",
+            "expected_return_date": now + timezone.timedelta(days=5),
             "book_id": book.id,
             "user_id": self.user,
         }
