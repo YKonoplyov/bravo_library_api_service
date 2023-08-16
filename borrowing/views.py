@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -98,3 +99,15 @@ class BorrowingViewSet(ModelViewSet):
         serializer.save(user_id=self.request.user)
 
         borrowing_created.send(sender=Borrowing, instance=self.queryset)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "users",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter by users id (ex. ?users=2,5)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

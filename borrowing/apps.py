@@ -7,4 +7,3 @@ class BorrowingConfig(AppConfig):
 
     def ready(self):
         import borrowing.signals
-
