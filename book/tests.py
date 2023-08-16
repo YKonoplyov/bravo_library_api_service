@@ -33,6 +33,17 @@ def detail_url(book_id):
     return reverse("book:book-detail", args=[book_id])
 
 
+class BookModelTests(TestCase):
+    def test_str_method(self):
+        book = sample_book(
+                    title="Harry Potter",
+                    author="J. K. Rowling",
+                    daily_fee=15
+                )
+        test_string = "Harry Potter (author: J. K. Rowling, daily fee: 15)"
+        self.assertEqual(book.__str__(), test_string)
+
+
 class BookImageUploadTests(TestCase):
     def setUp(self):
         self.client = APIClient()
