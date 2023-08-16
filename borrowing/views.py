@@ -92,7 +92,9 @@ class BorrowingViewSet(ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
         return redirect(reverse("payment:session-create"), status=status.HTTP_307_TEMPORARY_REDIRECT)
+
 
     def perform_create(self, serializer):
         """Adds user to borrow instance and decreasing book inventory by 1"""

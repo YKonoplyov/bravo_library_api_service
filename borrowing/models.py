@@ -38,6 +38,11 @@ class Borrowing(models.Model):
         Borrowing.validate_book_inventory(
             self.book_id
         )
+
     @property
     def is_active(self):
         return not bool(self.actual_return_date)
+
+    def __str__(self):
+        return (f"{self.book_id.title} was borrowed from {self.borrow_date} "
+                f"to expected {self.expected_return_date}")
