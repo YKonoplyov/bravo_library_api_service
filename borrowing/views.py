@@ -42,7 +42,7 @@ class BorrowingViewSet(ModelViewSet):
             queryset = queryset.filter(user_id=self.request.user)
 
         if users:
-            queryset = queryset.filter(user_id__in=users)
+            queryset = queryset.filter(user_id_id__in=users)
 
         is_active = self.request.query_params.get("is_active")
         if is_active:
@@ -56,7 +56,7 @@ class BorrowingViewSet(ModelViewSet):
         return queryset
 
     @action(
-        methods=["PATCH"],
+        methods=["GET"],
         detail=True,
         url_path="return-book",
         permission_classes=[IsAuthenticated],)
@@ -68,12 +68,18 @@ class BorrowingViewSet(ModelViewSet):
         book.inventory += 1
         book.save()
         borrowing.actual_return_date = timezone.datetime.now().date()
+        borrowing.save()
         serializer = self.get_serializer(borrowing, data=request.data)
+
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        borrowing = serializer.instance
+        if borrowing.actual_return_date > borrowing.expected_return_date:
+            return redirect(reverse("payment:session-create"),
+                            status=status.HTTP_307_TEMPORARY_REDIRECT, )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -88,12 +94,8 @@ class BorrowingViewSet(ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return redirect(
-            reverse("payment:session-create"),
-            status=status.HTTP_307_TEMPORARY_REDIRECT,
-            headers=headers
-        )
+
+        return redirect(reverse("payment:session-create"), status=status.HTTP_307_TEMPORARY_REDIRECT)
 
     def perform_create(self, serializer):
         """Adds user to borrow instance and decreasing book inventory by 1"""

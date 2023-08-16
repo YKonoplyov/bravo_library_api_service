@@ -24,7 +24,7 @@ class PaymentListView(generics.ListAPIView):
         if user.is_staff:
             return Payment.objects.all()
         else:
-            return Payment.objects.filter(user=user)
+            return Payment.objects.filter(borrowing__user_id=user)
 
 
 class PaymentDetailView(generics.RetrieveAPIView):
@@ -89,15 +89,16 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.save()
 
         return redirect(
-            session.get("url"), status=status.HTTP_301_MOVED_PERMANENTLY
+            session.get("url"),
+            status=status.HTTP_301_MOVED_PERMANENTLY
         )
 
     @staticmethod
     def calculate_money_to_pay(borrowing):
-
         days_in_usage = (
-            borrowing.expected_return_date - borrowing.borrow_date
+        borrowing.expected_return_date - borrowing.borrow_date
         ).days
+    
         book_daily_fee = borrowing.book_id.daily_fee
         if days_in_usage == 0:
             return book_daily_fee
