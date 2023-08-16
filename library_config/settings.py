@@ -127,7 +127,7 @@ AUTH_USER_MODEL = "user.User"
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Kiev"
 
 USE_I18N = True
 
@@ -158,12 +158,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
 }
 
-Q_CLUSTER = {
-    "timeout": 5,
-    "retry": 20,
-    "workers": 4,
-    "orm": "default",
-}
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
@@ -180,3 +174,13 @@ SPECTACULAR_SETTINGS = {
         "defaultModelExpandDepth": 2,
     },
 }
+
+Q_CLUSTER = {
+    "timeout": 5,
+    "retry": 20,
+    "workers": 4,
+    "orm": "default",
+}
+
+
+
