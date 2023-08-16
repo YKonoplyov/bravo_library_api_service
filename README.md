@@ -46,16 +46,17 @@ To set up the Library API project follow these steps:
  git clone https://github.com/YKonoplyov/bravo_library_api_service.git
  cd bravo_library_api_service
  python -m venv venv
- venv\Scripts\activate
- pip install requirements.txt
+ venv\Scripts\activate (on Windows)
+ source venv/bin/activate (on macOS/Linux)
+ pip install -r requirements.txt
  python loaddata library.json
  python manage.py migrate
- python manage.py runserver
+ docker-compose up --build
 ```
 ## API Endpoints
 ```
 "book":
-    "books": "http://127.0.0.1:8000/api/airport/airplane_types/",
+    "books": "http://127.0.0.1:8000/api/book/books/",
     
 "borrowing":
     "borrowings": "http://127.0.0.1:8000/api/borrowing/borrowings/"
@@ -68,6 +69,7 @@ To set up the Library API project follow these steps:
 "user":
     "registration": "http://127.0.0.1:8000/api/user/register/"
 	"token(login)": "http://127.0.0.1:8000/api/user/token/"
+	"refresh": "http://127.0.0.1:8000/api/user/token/refresh"
 	"profile": "http://127.0.0.1:8000/api/me/"
 
 "documentatoin": 
