@@ -46,7 +46,7 @@ class UserTest(TestCase):
             email="test2@example.com",
             password="password",
             telegram_nick="@user2_123"
-        )
+
 
         self.assertEqual(user.telegram_nick, "@user_123")
         self.assertEqual(user2.telegram_nick, "@user2_123")
