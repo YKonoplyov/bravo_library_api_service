@@ -45,7 +45,7 @@ class UserTest(TestCase):
         user2 = get_user_model().objects.create_user(
             email="test2@example.com",
             password="password",
-            telegram_nick="user2_123"
+            telegram_nick="@user2_123"
         )
 
         self.assertEqual(user.telegram_nick, "@user_123")
