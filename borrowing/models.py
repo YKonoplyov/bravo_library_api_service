@@ -32,11 +32,22 @@ class Borrowing(models.Model):
 
     def clean(self):
         Borrowing.validate_expected_return_date(
-            self.borrow_date,
             self.expected_return_date
         )
         Borrowing.validate_book_inventory(
             self.book_id
+        )
+
+    def save(
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None,
+    ):
+        self.full_clean()
+        return super(Borrowing, self).save(
+            force_insert, force_update, using, update_fields
         )
 
     @property
