@@ -68,16 +68,18 @@ class BorrowingViewSet(ModelViewSet):
         book.inventory += 1
         book.save()
         borrowing.actual_return_date = timezone.datetime.now().date()
+        borrowing.save()
         serializer = self.get_serializer(borrowing, data=request.data)
 
         if serializer.is_valid():
             serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         borrowing = serializer.instance
         if borrowing.actual_return_date > borrowing.expected_return_date:
             return redirect(reverse("payment:session-create"),
                             status=status.HTTP_307_TEMPORARY_REDIRECT, )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -94,7 +96,6 @@ class BorrowingViewSet(ModelViewSet):
         self.perform_create(serializer)
 
         return redirect(reverse("payment:session-create"), status=status.HTTP_307_TEMPORARY_REDIRECT)
-
 
     def perform_create(self, serializer):
         """Adds user to borrow instance and decreasing book inventory by 1"""
