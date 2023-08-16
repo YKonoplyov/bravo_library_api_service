@@ -88,11 +88,16 @@ class PaymentSessionCreateView(generics.CreateAPIView):
         payment.session_url = session.get("url")
         payment.save()
 
-        return redirect(session.get("url"), status=status.HTTP_301_MOVED_PERMANENTLY)
-      
+        return redirect(
+            session.get("url"),
+            status=status.HTTP_301_MOVED_PERMANENTLY
+        )
+
     @staticmethod
     def calculate_money_to_pay(borrowing):
-        days_in_usage = (borrowing.expected_return_date - borrowing.borrow_date).days
+        days_in_usage = (
+            borrowing.expected_return_date - borrowing.borrow_date
+        ).days
         book_daily_fee = borrowing.book_id.daily_fee
         total_price = book_daily_fee * days_in_usage
         return total_price
@@ -120,6 +125,7 @@ class PaymentSuccessView(APIView):
         return Response(
             {"message": "payment success"}
         )
+
 
 class PaymentCancelView(APIView):
     def get(self, request):
