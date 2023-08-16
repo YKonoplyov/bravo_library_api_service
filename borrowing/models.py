@@ -17,6 +17,16 @@ class Borrowing(models.Model):
         get_user_model(), related_name="user", on_delete=models.CASCADE
     )
 
+    @staticmethod
+    def validate_expected_return_date(expected_return):
+        date_today = timezone.datetime.now().date()
+        if expected_return < date_today:
+            raise ValidationError("Expected return date can`t be in the past")
+    def clean(self):
+        Borrowing.validate_expected_return_date(
+            self.borrow_date,
+            self.expected_return_date
+        )
     @property
     def is_active(self):
         return not bool(self.actual_return_date)
