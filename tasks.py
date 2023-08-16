@@ -11,6 +11,6 @@ def get_overdue_borrowings():
         actual_return_date__isnull=True
     )
     overdue_borrowings = active_borrowings.filter(
-            expected_return_date__lt=today_date
-        )
+        expected_return_date__lt=today_date
+    )
     TelegramBot.send_notification(overdue_borrowings)
