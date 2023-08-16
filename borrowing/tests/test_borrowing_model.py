@@ -73,12 +73,11 @@ class TestBorrowingModel(TestCase):
         with self.assertRaises(ValidationError):
             sample_borrowing(book_id=book, user_id=self.user)
 
-
     def test_str_method(self):
         borrowing = sample_borrowing(
-                    expected_return_date=(self.time_now - timedelta(days=2)),
+                    expected_return_date=(self.time_now + timedelta(days=2)),
                     user_id=self.user
                 )
         test_string = ("Sample book was borrowed from "
-                       "2023-08-16 to expected 2023-08-14")
+                       "2023-08-16 to expected 2023-08-18")
         self.assertEqual(borrowing.__str__(), test_string)
