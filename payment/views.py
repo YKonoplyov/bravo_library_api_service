@@ -94,6 +94,8 @@ class PaymentSessionCreateView(generics.CreateAPIView):
     def calculate_money_to_pay(borrowing):
         days_in_usage = (borrowing.expected_return_date - borrowing.borrow_date).days
         book_daily_fee = borrowing.book_id.daily_fee
+        if days_in_usage == 0:
+            return book_daily_fee
         total_price = book_daily_fee * days_in_usage
         return total_price
 
