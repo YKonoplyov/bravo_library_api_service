@@ -68,13 +68,13 @@ To set up the Library API project follow these steps:
 
 "user":
     "registration": "http://127.0.0.1:8000/api/user/register/"
-	"token(login)": "http://127.0.0.1:8000/api/user/token/"
-	"refresh": "http://127.0.0.1:8000/api/user/token/refresh"
-	"profile": "http://127.0.0.1:8000/api/me/"
+    "token(login)": "http://127.0.0.1:8000/api/user/token/"
+    "refresh": "http://127.0.0.1:8000/api/user/token/refresh"
+    "profile": "http://127.0.0.1:8000/api/me/"
 
 "documentatoin": 
-	"swagger": "http://127.0.0.1:8000/api/docs/" 
-	"redoc": "http://127.0.0.1:8000/api/schema/"
+    "swagger": "http://127.0.0.1:8000/api/docs/" 
+    "redoc": "http://127.0.0.1:8000/api/schema/"
 ```
 ## DB Structure
 
