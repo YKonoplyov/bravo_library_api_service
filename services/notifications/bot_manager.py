@@ -19,7 +19,7 @@ class TelegramBot:
         requests.get(url=url)
 
     def send_notifications(self, overdue_borrowings_queryset):
-        admin_message_text = f"List of users overdue for today\n\n"
+        admin_message_text = "List of users overdue for today\n\n"
 
         for overdue_borrowing in overdue_borrowings_queryset:
             admin_message_text += (

@@ -16,7 +16,9 @@ class TGBotActivated(BasePermission):
             return True
 
         bot = TelegramBot()
-        chat_id = bot.get_chat_id_if_started(telegram_nick=user.telegram_nick[1:])
+        chat_id = bot.get_chat_id_if_started(
+            telegram_nick=user.telegram_nick[1:]
+        )
 
         if chat_id != -1:
             user.chat_id = chat_id
